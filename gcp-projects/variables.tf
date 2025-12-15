@@ -9,3 +9,8 @@ variable "folder_id" {
 variable "billing_account" {
   description = "The ID of the billing account to associate this project with"
 }
+
+variable "network_name" {
+  description = "Name for Shared VPC network"
+  default     = "shared-network"
+}
