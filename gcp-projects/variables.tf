@@ -14,3 +14,8 @@ variable "network_name" {
   description = "Name for Shared VPC network"
   default     = "shared-network"
 }
+
+variable "region" {
+  description = "region"
+  default     = "northamerica-northeast1"
+}

@@ -17,12 +17,12 @@ module "vpc" {
     {
       subnet_name   = local.subnet_01
       subnet_ip     = "10.10.10.0/24"
-      subnet_region = "northamerica-northeast1"
+      subnet_region = var.region
     },
     {
       subnet_name           = local.subnet_02
       subnet_ip             = "10.10.20.0/24"
-      subnet_region         = "northamerica-northeast1"
+      subnet_region         = var.region
       subnet_private_access = true
       subnet_flow_logs      = false #true
     },

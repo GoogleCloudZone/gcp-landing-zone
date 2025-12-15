@@ -36,17 +36,6 @@ module "project-factory" {
   default_network_tier = "PREMIUM" # https://cloud.google.com/network-tiers/docs/using-network-service-tiers PREMIUM/STANDARD
   grant_services_security_admin_role = true # for GKE firewall rule creation via GKE service agent
   activate_apis        = ["appengine.googleapis.com","compute.googleapis.com", "container.googleapis.com", "cloudbilling.googleapis.com"] # may require 2nd run - wait for service enablement
-  
-
-  //labels = ["environment"]
-  #activate_api_identities = [{
-  #  api = "healthcare.googleapis.com"
-  #  roles = [
-  #    "roles/healthcare.serviceAgent",
-  #    "roles/bigquery.jobUser",
-  #  ]
-  #}]
-
   deletion_policy = "DELETE"
 }
 
@@ -54,7 +43,7 @@ module "app-engine" {
   source  = "terraform-google-modules/project-factory/google//modules/app_engine"
   version = "~> 18.0"
   project_id  = module.project-factory.project_id
-  location_id = "northamerica-northeast1"
+  location_id = var.region
 }
 
 #  michael@cloudshell:~/wse_github/gcp-landing-zone/gcp-projects (lz-ado-xyz-boot-ot)$ gcloud services list --project obrienlabs-sandbox2-ot-ccb4 | grep NAME
