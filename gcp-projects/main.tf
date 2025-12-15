@@ -14,10 +14,11 @@ module "project-factory" {
   version = "~> 18.0"
 
   random_project_id       = true
-  name                    = "simple-sample-project"
-  org_id                  = var.organization_id
+  name                    = "obrienlabs-test-ot"
+  #org_id                  = var.organization_id
+  folder_id               = var.folder_id
   billing_account         = var.billing_account
-  default_service_account = "deprivilege"
+  #default_service_account = "deprivilege"
 
   activate_api_identities = [{
     api = "healthcare.googleapis.com"
@@ -29,14 +30,3 @@ module "project-factory" {
 
   deletion_policy = "DELETE"
 }
-
-output "project_info_example" {
-  value       = module.project-factory.project_id
-  description = "The ID of the created project"
-}
-
-output "domain_example" {
-  value       = module.project-factory.domain
-  description = "The organization's domain"
-}
-
