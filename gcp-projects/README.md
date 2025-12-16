@@ -10,21 +10,27 @@ We are using the standard Java 25 / Spring Boot 4 canary app (for CVE testing, C
 This container application code is built GCP CSR at
 
 ## CSR
- - create repo, upload key, populate
- - ```
-ssh-keygen -t rsa -C "mich...labs.tech"
-chmod 400 obr...ch-cloud-shell-202512
+- create or update a CICD project to hold the repos
+
+```
+gcloud services enable sourcerepo.googleapis.com
+gcloud services enable artifactregistry.googleapis.com
+
+```
+- create repo, upload key, populate
+```
+ssh-keygen -t rsa -C "mich....yz"
+chmod 400 obr...-cloud-shell-csr-202512
 eval `ssh-agent`
 ssh-add ~/.ssh/ob*
 # upload to CSR/user/ssh-keys
-cat ~/.ssh/ob*
-
+cat ~/.ssh/ob*.pub
 ```
 - https://source.cloud.google.com/user/ssh_keys?register=true 
 
-clone
 ```
-git clone
+git clone ssh://mic..yz@source.developers.google.com:2022/p/op..lx/r/ops-cicd-ot
+
 ```
 
 ## Quickstart
