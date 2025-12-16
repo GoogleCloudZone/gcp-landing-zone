@@ -3,11 +3,11 @@
 # for eash of override - key/value pairs for constants - shared by all scripts
 # example
 # deploy
-./deployment.sh -c true -d false -p true -b ops-cicd-olx
+#./deployment.sh -c true -d false -p true -b ops-cicd-olx
 # failed - delete created project
-./deployment.sh -c false -d true -p false -b ops-cicd-olx -s cloud-functions-arch-olx-1663
+#./deployment.sh -c false -d true -p false -b ops-cicd-olx -s cloud-functions-arch-olx-1663
 # retry
-./deployment.sh -c true -d false -p true -b ops-cicd-olx
+#./deployment.sh -c true -d false -p true -b ops-cicd-olx
 
 # /deployment.sh -c true -d false -p true -b functions-old 
 
@@ -49,6 +49,8 @@ if [[ "$CREATE_PROJ" != false ]]; then
   # to describe functions
   gcloud servcies enable run.googleapis.com
   gcloud services enable cloudfunctions.googleapis.com
+
+  gcloud services enable cloudresourcemanager.googleapis.com
 
   BILLING_FORMAT="--format=value(billingAccountName)"
   BILLING_ID=$(gcloud billing projects describe $BOOT_PROJECT_ID $BILLING_FORMAT | sed 's/.*\///')
@@ -172,7 +174,7 @@ while getopts ":c:d:b:p:s:u:" PARAM; do
 done
 
 echo "Options are: -c true/false (create) -d (delete) true/false (delete proj) -p provision (true/false) -b BOOT_PROJ_ID -s (for delete only) STREAM_PROJECT_ID"
-
+exit 1
 
 if [[ -z $UNIQUE ]]; then
   usage
