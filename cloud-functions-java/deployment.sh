@@ -9,7 +9,6 @@
 # retry
 #./deployment.sh -c true -d false -p true -b ops-cicd-olx
 
-# /deployment.sh -c true -d false -p true -b functions-old 
 
 
 usage() {
@@ -174,7 +173,6 @@ while getopts ":c:d:b:p:s:u:" PARAM; do
 done
 
 echo "Options are: -c true/false (create) -d (delete) true/false (delete proj) -p provision (true/false) -b BOOT_PROJ_ID -s (for delete only) STREAM_PROJECT_ID"
-exit 1
 
 if [[ -z $UNIQUE ]]; then
   usage
