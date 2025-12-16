@@ -15,7 +15,7 @@ This container application code is built GCP CSR at
 ```
 gcloud services enable sourcerepo.googleapis.com
 gcloud services enable artifactregistry.googleapis.com
-
+gcloud services enable cloudbuild.googleapis.com
 ```
 - create repo, upload key, populate
 ```
