@@ -1,7 +1,15 @@
 #!/bin/bash
 #
-
 # for eash of override - key/value pairs for constants - shared by all scripts
+# example
+# deploy
+./deployment.sh -c true -d false -p true -b ops-cicd-olx
+# failed - delete created project
+./deployment.sh -c false -d true -p false -b ops-cicd-olx -s cloud-functions-arch-olx-1663
+# retry
+./deployment.sh -c true -d false -p true -b ops-cicd-olx
+
+# /deployment.sh -c true -d false -p true -b functions-old 
 
 
 usage() {
@@ -13,9 +21,7 @@ EOF
 
 source ./vars.sh
 
-
 deployment() {
-
   echo "Date: $(date)"
   echo "Timestamp: $(date +%s)"
   echo "$UNIQUE"
@@ -23,9 +29,9 @@ deployment() {
 
 if [[ "$CREATE_PROJ" != false ]]; then
   # linux
-  STREAM_PROJECT_RAND=$(shuf -i 0-10000 -n 1)
+  #STREAM_PROJECT_RAND=$(shuf -i 0-10000 -n 1)
   # osx
-  #STREAM_PROJECT_RAND=$(jot -r 1 1000 10000)
+  STREAM_PROJECT_RAND=$(jot -r 1 1000 10000)
   STREAM_PROJECT_ID=${STREAM_PROJECT_NAME_PREFIX}-${STREAM_PROJECT_RAND}
   echo "Creating project: $STREAM_PROJECT_ID"
 else
@@ -39,6 +45,11 @@ echo "STREAM_PROJECT_ID: $STREAM_PROJECT_ID"
 if [[ "$CREATE_PROJ" != false ]]; then
   # create project
   gcloud config set project "${BOOT_PROJECT_ID}"
+  # verify that the following api's are enabled on the boot project
+  # to describe functions
+  gcloud servcies enable run.googleapis.com
+  gcloud services enable cloudfunctions.googleapis.com
+
   BILLING_FORMAT="--format=value(billingAccountName)"
   BILLING_ID=$(gcloud billing projects describe $BOOT_PROJECT_ID $BILLING_FORMAT | sed 's/.*\///')
   ORG_ID=$(gcloud projects get-ancestors $BOOT_PROJECT_ID --format='get(id)' | tail -1)
@@ -48,10 +59,9 @@ if [[ "$CREATE_PROJ" != false ]]; then
   echo "Creating project: ${STREAM_PROJECT_ID} on folder: ${ROOT_FOLDER_ID}"
   gcloud projects create "$STREAM_PROJECT_ID" --name="${STREAM_PROJECT_ID}" --set-as-default --folder="$ROOT_FOLDER_ID"
 
-  gcloud beta billing projects link "${STREAM_PROJECT_ID}" --billing-account "${BILLING_ID}"  
+  gcloud billing projects link "${STREAM_PROJECT_ID}" --billing-account "${BILLING_ID}"  
   gcloud config set project "${STREAM_PROJECT_ID}"
 
-  
   # service account
 
   # iam roles for user
@@ -66,9 +76,6 @@ if [[ "$CREATE_PROJ" != false ]]; then
   gcloud services enable cloudbuild.googleapis.com
   gcloud services enable artifactregistry.googleapis.com
   gcloud services enable pubsub.googleapis.com
-
-
-
   # create bucket
 
   # create cloud function
@@ -76,15 +83,11 @@ if [[ "$CREATE_PROJ" != false ]]; then
   # BQ schema
   
   # Logging
- 
-
-
 fi
 
 
 # /deployment.sh -c false -d false -p true -b eventstream-biometric-old -s eventstream-biometric-3732
 if [[ "$PROVISION_PROJ" != false ]]; then
-
   gcloud config set project "${STREAM_PROJECT_ID}"
   echo "current project switched to "
   gcloud config get project
@@ -107,26 +110,25 @@ if [[ "$PROVISION_PROJ" != false ]]; then
 --gen2 \
 --allow-unauthenticated \
 --runtime=java17 \
---region=us-central1 \
+--region=${REGION} \
 --source=. \
 --entry-point=${JAVA_FQ_CLASSNAME} \
 --memory=512MB \
 --trigger-http 
 
+# describe URL regardless of gen 1 or 2
+echo "Functions URL for project ${STREAM_PROJECT_ID} is the following"
+gcloud functions describe ${HTTP_FUNCTION_NAME} --region=${REGION} --format="value(httpsTrigger.url, serviceConfig.uri)" --project=${STREAM_PROJECT_ID}
+
 #cd ../../../
-
 fi
-
-
 
 if [[ "$DELETE_PROJ" != false ]]; then
   # disable billing before deletion - to preserve the project/billing quota
-  gcloud alpha billing projects unlink "${STREAM_PROJECT_ID}"
+  gcloud billing projects unlink "${STREAM_PROJECT_ID}"
   # delete cc project
   gcloud projects delete "$STREAM_PROJECT_ID" --quiet
 fi
-
-
 
   # RETURN
   gcloud config set project "${BOOT_PROJECT_ID}"  
@@ -139,7 +141,7 @@ fi
   echo "Timestamp: $(date +%s)"
 }
 
-UNIQUE=old
+UNIQUE=olx
 CREATE_PROJ=false
 DELETE_PROJ=false
 PROVISION_PROJ=false
@@ -169,7 +171,7 @@ while getopts ":c:d:b:p:s:u:" PARAM; do
   esac
 done
 
-#  echo "Options are: -c true/false (create) -d true/false (delete proj) -b BOOT_PROJ_ID"
+echo "Options are: -c true/false (create) -d (delete) true/false (delete proj) -p provision (true/false) -b BOOT_PROJ_ID -s (for delete only) STREAM_PROJECT_ID"
 
 
 if [[ -z $UNIQUE ]]; then
