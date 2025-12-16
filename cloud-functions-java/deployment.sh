@@ -46,7 +46,7 @@ if [[ "$CREATE_PROJ" != false ]]; then
   gcloud config set project "${BOOT_PROJECT_ID}"
   # verify that the following api's are enabled on the boot project
   # to describe functions
-  gcloud servcies enable run.googleapis.com
+  gcloud services enable run.googleapis.com
   gcloud services enable cloudfunctions.googleapis.com
 
   gcloud services enable cloudresourcemanager.googleapis.com
