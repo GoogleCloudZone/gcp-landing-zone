@@ -63,6 +63,9 @@ if [[ "$CREATE_PROJ" != false ]]; then
   gcloud billing projects link "${STREAM_PROJECT_ID}" --billing-account "${BILLING_ID}"  
   gcloud config set project "${STREAM_PROJECT_ID}"
 
+  # add labels
+  gcloud alpha projects update $STREAM_PROJECT_ID --update-labels=$PROJECT_LABELS
+
   # service account
 
   # iam roles for user
