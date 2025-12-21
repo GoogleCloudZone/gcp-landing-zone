@@ -3,7 +3,7 @@
 #export PROJECT_NAME=functions-old
 export REGION=northamerica-northeast1
 export SUPER_ADMIN_EMAIL=michael@obrienlabs.xyz
-export PROJECT_LABELS="environment=sandbox,cicd=bash,owner=michael.obrien"
+export PROJECT_LABELS="environment=sandbox,cicd=bash,owner=michael_obrien"
 export STREAM_PROJECT_NAME_PREFIX=cloud-functions-arch-olx
 # archetypes-gcp-cloud-olx
 export ROOT_FOLDER_ID=579268326076
