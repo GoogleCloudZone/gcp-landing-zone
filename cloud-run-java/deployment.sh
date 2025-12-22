@@ -57,6 +57,9 @@ deployment() {
     gcloud projects create "$STREAM_PROJECT_ID" --name="${STREAM_PROJECT_ID}" --set-as-default --folder="$ROOT_FOLDER_ID"
     gcloud billing projects link "${STREAM_PROJECT_ID}" --billing-account "${BILLING_ID}"  
     gcloud config set project "${STREAM_PROJECT_ID}"
+    # add labels
+    gcloud alpha projects update $STREAM_PROJECT_ID --update-labels=$PROJECT_LABELS
+   
 
     # service account
 
@@ -109,27 +112,34 @@ deployment() {
     SA_EMAIL=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
 
     # owner for now (redundant)
-    gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID  --member=user:$SUPER_ADMIN_EMAIL --role=roles/owner --quiet > /dev/null 1>&1
+    gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID --member=user:$SUPER_ADMIN_EMAIL --role=roles/owner --quiet > /dev/null 1>&1
     echo "owner on project $STREAM_PROJECT_ID for $SUPER_ADMIN_EMAIL"
     # for ability to log entries
     echo "bind $SA_EMAIL "
     gcloud organizations add-iam-policy-binding "${ORG_ID}" --member="serviceAccount:${SA_EMAIL}" --role=roles/logging.logWriter --condition=None --quiet  > /dev/null 1>&1
-    echo "wait 60 sec"
+    # reading images - redundant
+    gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID --member="serviceAccount:${SA_EMAIL}"--role=roles/artifactregistry.reader --quiet > /dev/null 1>&1
+    # set on internal SA - required - see https://github.com/GoogleCloudZone/gcp-landing-zone/issues/3#issuecomment-3679745837
+    CLOUD_RUN_SA_EMAIL=service-$PROJECT_NUMBER@serverless-robot-prod.iam.gserviceaccount.com
+    gcloud projects add-iam-policy-binding $PROJECT_CICD_ARTIFACT_REGISTRY --member="CLOUD_RUN_SA_EMAIL"--role=roles/artifactregistry.reader --quiet > /dev/null 1>&1
+    
+    echo "wait 60 sec for SA roles to propagate"
     sleep 60
-
 
     #docker tag obrienlabs/magellan-nbi:0.0.4-ia64 us-central1-docker.pkg.dev/biometric-backend-cr-man-old/magellan/magellan-nbi:0.0.4-ia64
     #docker push central1-docker.pkg.dev/biometric-backend-cr-man-old/magellan/magellan-nbi:0.0.4-ia64
-
     echo "provisioning to ${STREAM_PROJECT_ID}"
 
-
-    gcloud alpha run deploy magellan-nbi /
-      --image=us-central1-docker.pkg.dev/biometric-backend-cr-man-old/magellan/magellan-nbi@sha256:e3d09b1f25156525dd1446a56dafae88a65012a48f95012235b938f032275d35 /
-      --no-invoker-iam-check /
-      --port=8080 /
-      --service-account=${SA_EMAIL} /
-      --region=${REGION} /
+    gcloud alpha run deploy canary-java-springboot \
+      --image=northamerica-northeast1-docker.pkg.dev/ops-cicd-olx/canary-java-springboot/canary-java-springboot:latest \
+      --no-invoker-iam-check \
+      --port=8080 \
+      --service-account=${SA_EMAIL} \
+      --no-cpu-throttling \
+      --execution-environment=gen2 \
+      --no-cpu-boost \
+      --region=${REGION} \
+      --allow-unauthenticated \
       --project=${STREAM_PROJECT_ID}
     
     #gcloud functions deploy ${HTTP_FUNCTION_NAME} \
@@ -143,12 +153,20 @@ deployment() {
     #  --trigger-http 
 
     # describe URL regardless of gen 1 or 2
+    # verify
+    #https://canary-java-springboot-890694568874.northamerica-northeast1.run.app/canary/api/activeId
     echo "Cloud Run URL for project ${STREAM_PROJECT_ID} is the following"
     #gcloud functions describe ${HTTP_FUNCTION_NAME} --region=${REGION} --format="value(httpsTrigger.url, serviceConfig.uri)" --project=${STREAM_PROJECT_ID}
     #cd ../../../
   fi
 
   if [[ "$DELETE_PROJ" != false ]]; then
+    # delete custom service account
+    PROJECT_NUMBER=$(gcloud projects list --filter="${STREAM_PROJECT_ID}" '--format=value(PROJECT_NUMBER)')
+    echo "PROJECT_NUMBER: $PROJECT_NUMBER"
+    SA_EMAIL=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
+
+
     # disable billing before deletion - to preserve the project/billing quota
     gcloud billing projects unlink "${STREAM_PROJECT_ID}"
     gcloud projects delete "$STREAM_PROJECT_ID" --quiet
