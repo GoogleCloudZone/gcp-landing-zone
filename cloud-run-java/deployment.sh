@@ -112,16 +112,16 @@ deployment() {
     SA_EMAIL=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
 
     # owner for now (redundant)
-    gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID --member=user:$SUPER_ADMIN_EMAIL --role=roles/owner --quiet > /dev/null 1>&1
+    gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID --member="user:${SUPER_ADMIN_EMAIL}" --role=roles/owner --quiet > /dev/null 1>&1
     echo "owner on project $STREAM_PROJECT_ID for $SUPER_ADMIN_EMAIL"
     # for ability to log entries
     echo "bind $SA_EMAIL "
     gcloud organizations add-iam-policy-binding "${ORG_ID}" --member="serviceAccount:${SA_EMAIL}" --role=roles/logging.logWriter --condition=None --quiet  > /dev/null 1>&1
     # reading images - redundant
-    gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID --member="serviceAccount:${SA_EMAIL}"--role=roles/artifactregistry.reader --quiet > /dev/null 1>&1
+    gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID --member="serviceAccount:${SA_EMAIL}" --role=roles/artifactregistry.reader --quiet > /dev/null 1>&1
     # set on internal SA - required - see https://github.com/GoogleCloudZone/gcp-landing-zone/issues/3#issuecomment-3679745837
     CLOUD_RUN_SA_EMAIL=service-$PROJECT_NUMBER@serverless-robot-prod.iam.gserviceaccount.com
-    gcloud projects add-iam-policy-binding $PROJECT_CICD_ARTIFACT_REGISTRY --member="CLOUD_RUN_SA_EMAIL"--role=roles/artifactregistry.reader --quiet > /dev/null 1>&1
+    gcloud projects add-iam-policy-binding $PROJECT_CICD_ARTIFACT_REGISTRY --member="serviceAccount:${CLOUD_RUN_SA_EMAIL}" --role=roles/artifactregistry.reader --quiet > /dev/null 1>&1
     
     echo "wait 60 sec for SA roles to propagate"
     sleep 60
