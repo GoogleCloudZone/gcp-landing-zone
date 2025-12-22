@@ -131,7 +131,7 @@ deployment() {
     echo "provisioning to ${STREAM_PROJECT_ID}"
 
     gcloud alpha run deploy canary-java-springboot \
-      --image=northamerica-northeast1-docker.pkg.dev/ops-cicd-olx/canary-java-springboot/canary-java-springboot:latest \
+      --image=northamerica-northeast1-docker.pkg.dev/${PROJECT_CICD_ARTIFACT_REGISTRY}/canary-java-springboot/canary-java-springboot:latest \
       --no-invoker-iam-check \
       --port=8080 \
       --service-account=${SA_EMAIL} \
