@@ -121,7 +121,8 @@ deployment() {
     gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID --member="serviceAccount:${SA_EMAIL}" --role=roles/artifactregistry.reader --quiet > /dev/null 1>&1
     # set on internal SA - required - see https://github.com/GoogleCloudZone/gcp-landing-zone/issues/3#issuecomment-3679745837
     CLOUD_RUN_SA_EMAIL=service-$PROJECT_NUMBER@serverless-robot-prod.iam.gserviceaccount.com
-    gcloud projects add-iam-policy-binding $PROJECT_CICD_ARTIFACT_REGISTRY --member="serviceAccount:${CLOUD_RUN_SA_EMAIL}" --role=roles/artifactregistry.reader --quiet > /dev/null 1>&1
+    # some orgs need --condition=None
+    gcloud projects add-iam-policy-binding $PROJECT_CICD_ARTIFACT_REGISTRY --member="serviceAccount:${CLOUD_RUN_SA_EMAIL}" --role=roles/artifactregistry.reader --condition=None --quiet > /dev/null 1>&1
     
     echo "wait 60 sec for SA roles to propagate"
     sleep 60
