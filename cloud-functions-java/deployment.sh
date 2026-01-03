@@ -109,7 +109,7 @@ if [[ "$PROVISION_PROJ" != false ]]; then
  sleep 60
 
 #cd main/java/functions
-  echo "provisioning to ${STREAM_PROJECT_ID}"
+  echo "provisioning to ${STREAM_PROJECT_ID} for function: ${HTTP_FUNCTION_NAME}"
   gcloud functions deploy ${HTTP_FUNCTION_NAME} \
 --gen2 \
 --allow-unauthenticated \
