@@ -1,3 +1,7 @@
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+.terraform.lock.hcl
 # Compiled class file
 *.class
 
