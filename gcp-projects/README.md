@@ -13,6 +13,7 @@ This container application code is built GCP CSR at
 - create or update a CICD project to hold the repos
 
 ```
+gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable sourcerepo.googleapis.com
 gcloud services enable artifactregistry.googleapis.com
 gcloud services enable cloudbuild.googleapis.com
