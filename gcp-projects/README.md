@@ -7,7 +7,7 @@ This GCP archetype is an example GAE standard deployment of a Java based REST ap
 ## Container
 We are using the standard Java 25 / Spring Boot 4 canary app (for CVE testing, Cloud Build deployment and Artifact Registry stoarage/scanning)
 
-This container application code is built GCP CSR at
+This container application code is built from a GCP CSR  or ADO repo at 
 
 ## CSR
 - create or update a CICD project to hold the repos
@@ -34,7 +34,20 @@ git clone ssh://mic..yz@source.developers.google.com:2022/p/op..lx/r/ops-cicd-ot
 
 ```
 
+## Create a terraform state storage bucket
+```
+gcloud storage buckets create gs://gcp-bootstrap-state --location=northamerica-northeast1
+```
+
 ## Quickstart
+
+```
+gcloud config set project lz-ado-xyz-boot-ot
+cd wse_github/gcp-landing-zone/gcp-projects
+terraform init
+terraform plan
+terraform apply --auto-approve
+```
 
 ## Deployment
 
