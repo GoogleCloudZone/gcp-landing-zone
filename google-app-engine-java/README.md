@@ -19,6 +19,8 @@ This container application code is built from a GCP CSR  or ADO repo at
 ```
 gcloud auth login
 gcloud config set project archetypes-boot-ot
+gcloud services enable cloudbilling.googleapis.com
+gcloud services enable iam.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable sourcerepo.googleapis.com
 gcloud services enable artifactregistry.googleapis.com
