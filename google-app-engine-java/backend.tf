@@ -1,7 +1,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "gcp-bootstrap-state"
-    prefix = "terraform/gcp-landing-zone/gcp-projects/state"
+    bucket = "gcp-archetypes-state"
+    prefix = "terraform/gcp-archetypes/google-app-engine-java/state"
   }
 }
