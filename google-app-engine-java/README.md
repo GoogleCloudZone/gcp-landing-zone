@@ -120,6 +120,11 @@ https://gae-sandbox-b8rb-d4f4.nn.r.appspot.com/canary
 
 ## Deployment
 
+## URLs
+- javascript canvas - https://<project_id>>.nn.r.appspot.com/canary/
+- health check - https://<project_id>>.nn.r.appspot.com/canary/api/health
+- json simulation - https://<project_id>>nn.r.appspot.com/canary/api/activeId
+
 ## Delete
 - no need to delete the cloud build history, artifact repository or google app engine versions - all of these are generated and out-of-band of terraform state.
 
