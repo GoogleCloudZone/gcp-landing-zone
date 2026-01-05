@@ -61,6 +61,7 @@ resource "google_artifact_registry_repository" "images" {
 # the appspot generated SA needs write access to AR and CB as well as write access to cloud storage
 locals {
   appspot_sa_member = "serviceAccount:${module.project-factory.project_id}@appspot.gserviceaccount.com"
+  #appspot_sa_member = "${module.project-factory.project_id}@appspot.gserviceaccount.com"
   appspot_project_roles = toset(["roles/artifactregistry.writer", "roles/storage.admin"])
 }
 
@@ -70,6 +71,7 @@ resource "google_project_iam_member" "appspot_project_roles" {
   role    = each.value
   member  = local.appspot_sa_member
 
+  # fix this depends_on 
   depends_on = [module.app-engine.app_name]
 }
 

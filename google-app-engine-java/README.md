@@ -57,14 +57,14 @@ gcloud storage buckets create gs://gcp-archetypes-state --location=northamerica-
 ## Quickstart
 
 ```
-gcloud config set project lz-ado-xyz-boot-ot
+gcloud config set project archetypes-boot-ot
 cd wse_github/gcp-landing-zone/google-app-engine-java
 terraform init
 terraform validate
 terraform plan
 terraform apply --auto-approve
 
-The appspot service account must have write permissions for cloud build and artifact registry as well as write access to google storage.
+The appspot service account must have write permissions for cloud build and artifact registry as well as write access to google storage - terraform apply may need to be run twice until I fix timing using the proper depends_on
 
 After terraform completes, switch to the generated GAE project and deploy a version of the app in app/*
 Note the config in app.yaml.
@@ -77,6 +77,45 @@ entrypoint: "java -jar app/canary-0.0.1-SNAPSHOT.jar"
 
 gcloud config set project gae-sandbox-3z8g-8f97
 gcloud app deploy --project=gae-sandbox-3z8g-8f97 --quiet
+This may need to be run twice - to kick in the two service account role grants - or wait a couple min for propagation
+
+gcloud app deploy --project=gae-sandbox-3z8g-8f97 --quiet
+
+you will see
+
+michael@cloudshell:~/wse_github/gcp-landing-zone/google-app-engine-java (gae-sandbox-b8rb-d4f4)$ gcloud app deploy --project=gae-sandbox-b8rb-d4f4 --quiet
+WARNING: You might be using automatic scaling for a standard environment deployment, without providing a value for automatic_scaling.max_instances. Starting from March, 2025, App Engine sets the automatic scaling maximum instances default for standard environment deployments to 20. This change doesn't impact existing apps. To override the default, specify the new max_instances value in your app.yaml file, and deploy a new version or redeploy over an existing version. For details on max_instances, see https://cloud.google.com/appengine/docs/standard/reference/app-yaml.md#scaling_elements. 
+
+Services to deploy:
+
+descriptor:                  [/home/michael/wse_github/gcp-landing-zone/google-app-engine-java/app.yaml]
+source:                      [/home/michael/wse_github/gcp-landing-zone/google-app-engine-java]
+target project:              [gae-sandbox-b8rb-d4f4]
+target service:              [default]
+target version:              [20260105t034339]
+target url:                  [https://gae-sandbox-b8rb-d4f4.nn.r.appspot.com]
+target service account:      [gae-sandbox-b8rb-d4f4@appspot.gserviceaccount.com]
+
+
+Beginning deployment of service [default]...
+Uploading 2 files to Google Cloud Storage
+50%
+100%
+100%
+File upload done.
+Waiting for operation [apps/gae-sandbox-b8rb-d4f4/operations/0cf192e6-1562-43dc-9525-6b5a68a56521] to complete...done.                                                                                                                                                          
+Setting traffic split for service [default]...done.                                                                                                                                                                                                                             
+Deployed service [default] to [https://gae-sandbox-b8rb-d4f4.nn.r.appspot.com]
+
+You can stream logs from the command line by running:
+  $ gcloud app logs tail -s default
+
+To view your application in the web browser run:
+  $ gcloud app browse
+michael@cloudshell:~/wse_github/gcp-landing-zone/google-app-engine-java (gae-sandbox-b8rb-d4f4)$ gcloud app browse
+Did not detect your browser. Go to this link to view your app:
+https://gae-sandbox-b8rb-d4f4.nn.r.appspot.com/canary 
+
 ```
 
 ## Deployment
