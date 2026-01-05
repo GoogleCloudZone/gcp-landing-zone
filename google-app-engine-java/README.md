@@ -64,7 +64,7 @@ terraform validate
 terraform plan
 terraform apply --auto-approve
 
-The appspot service account must have write permissions for cloud build and artifact registry.
+The appspot service account must have write permissions for cloud build and artifact registry as well as write access to google storage.
 
 After terraform completes, switch to the generated GAE project and deploy a version of the app in app/*
 Note the config in app.yaml.
@@ -80,5 +80,15 @@ gcloud app deploy --project=gae-sandbox-3z8g-8f97 --quiet
 ```
 
 ## Deployment
+
+## Delete
+- no need to delete the cloud build history, artifact repository or google app engine versions - all of these are generated and out-of-band of terraform state.
+
+```
+michael@cloudshell:~/wse_github/gcp-landing-zone/google-app-engine-java (gae-sandbox-3z8g-8f97)$ gcloud config set project archetypes-boot-ot
+terraform init
+terraform plan
+terraform destroy
+```
 
 ## Links
