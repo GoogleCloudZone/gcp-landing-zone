@@ -1,0 +1,11 @@
+#runtime: java21
+runtime: java25
+#runtime_config:
+#    operating_system: "ubuntu24"
+#    runtime_version: "25" 
+env: standard
+#env: flex
+entrypoint: "java -jar app/canary-0.0.1-SNAPSHOT.jar" 
+#instance_class: F2 
+#manual_scaling:
+#  instances: 1

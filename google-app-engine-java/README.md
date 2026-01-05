@@ -27,6 +27,7 @@ gcloud services enable cloudresourcemanager.googleapis.com
 
 
 gcloud services enable sourcerepo.googleapis.com
+# both ar and cb required for containerization of the war/jar
 gcloud services enable artifactregistry.googleapis.com
 gcloud services enable cloudbuild.googleapis.com
 ```
@@ -57,10 +58,25 @@ gcloud storage buckets create gs://gcp-archetypes-state --location=northamerica-
 
 ```
 gcloud config set project lz-ado-xyz-boot-ot
-cd wse_github/gcp-landing-zone/gcp-projects
+cd wse_github/gcp-landing-zone/google-app-engine-java
 terraform init
+terraform validate
 terraform plan
 terraform apply --auto-approve
+
+The appspot service account must have write permissions for cloud build and artifact registry.
+
+After terraform completes, switch to the generated GAE project and deploy a version of the app in app/*
+Note the config in app.yaml.
+
+
+runtime: java25 
+env: standard
+entrypoint: "java -jar app/canary-0.0.1-SNAPSHOT.jar" 
+
+
+gcloud config set project gae-sandbox-3z8g-8f97
+gcloud app deploy --project=gae-sandbox-3z8g-8f97 --quiet
 ```
 
 ## Deployment
