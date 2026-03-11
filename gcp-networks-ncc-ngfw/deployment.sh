@@ -27,10 +27,7 @@ deployment() {
   echo "running with create=${CREATE_PROJ} delete=${DELETE_PROJ} boot_project_id=${BOOT_PROJECT_ID}"
 
   # verify that the following api's are enabled on the boot project
-  # to describe functions
   gcloud config set project "${BOOT_PROJECT_ID}"
-  #gcloud services enable run.googleapis.com
-  #gcloud services enable cloudfunctions.googleapis.com
   gcloud services enable cloudresourcemanager.googleapis.com
 
   if [[ "$CREATE_PROJ" != false ]]; then
@@ -75,7 +72,7 @@ deployment() {
     echo "Enabling APIs"
     gcloud services enable cloudapis.googleapis.com
     #gcloud services enable cloudfunctions.googleapis.com
-    gcloud services enable run.googleapis.com
+    #gcloud services enable run.googleapis.com
     gcloud services enable container.googleapis.com
     gcloud services enable cloudbuild.googleapis.com
     gcloud services enable artifactregistry.googleapis.com
@@ -85,13 +82,21 @@ deployment() {
     gcloud services enable compute.googleapis.com
     #gcloud services enable storage-component.googleapis.com 
     #gcloud services enable cloudkms.googleapis.com 
-    #gcloud services enable logging.googleapis.com 
+    gcloud services enable logging.googleapis.com 
     # BigQuery ok
     #gcloud services enable bigquerymigration.googleapis.com
     #gcloud services enable bigquery.googleapis.com
     #gcloud services enable bigquerystorage.googleapis.com
     #gcloud services enable krmapihosting.googleapis.com 
-    #gcloud services enable cloudresourcemanager.googleapis.com 
+    gcloud services enable cloudresourcemanager.googleapis.com 
+    # VPC
+    gcloud services enable certificatemanager.googleapis.com
+    gcloud services enable vpcaccess.googleapis.com
+    # PSC
+    gcloud services enable servicedirectory.googleapis.com
+
+      # NCC
+    gcloud services enable networkconnectivity.googleapis.com
 
 
 
@@ -105,7 +110,7 @@ deployment() {
   fi
 
 
-  create_vpcs
+
 
   if [[ "$PROVISION_PROJ" != false ]]; then
     gcloud config set project "${STREAM_PROJECT_ID}"
@@ -117,6 +122,10 @@ deployment() {
     PROJECT_NUMBER=$(gcloud projects list --filter="${STREAM_PROJECT_ID}" '--format=value(PROJECT_NUMBER)')
     echo "PROJECT_NUMBER: $PROJECT_NUMBER"
     SA_EMAIL=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
+
+
+   #create_vpcs
+   #exit 0
 
     # owner for now (redundant)
     gcloud projects add-iam-policy-binding $STREAM_PROJECT_ID --member="user:${SUPER_ADMIN_EMAIL}" --role=roles/owner --quiet > /dev/null 1>&1
@@ -166,7 +175,10 @@ deployment() {
 
 
 create_vpcs() {
-  echo "Create VPCs"
+  echo "Create VPCs on ${STREAM_PROJECT_ID}"
+  gcloud config set project "${STREAM_PROJECT_ID}"
+  # NCC
+
 
 }
 
